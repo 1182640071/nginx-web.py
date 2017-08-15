@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>redis安装管理</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        .serverlist {
+            position: absolute;
+            z-index: 3;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            max-height: 80%;
+            border: 5px solid #CCC;
+            text-align: center;
+            font-size: 10px;
+            display: none;
+            background-color: white;
+            overflow: auto;
+            _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+        }
+
+        .serverlist_redis {
+            position: absolute;
+            z-index: 2;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            max-height: 80%;
+            border: 5px solid #CCC;
+            text-align: center;
+            font-size: 10px;
+            display: none;
+            background-color: white;
+            overflow: auto;
+            _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+        }
+
+        .div_catalog{
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            width: 100%;
+            max-height: 100%;
+            border: 5px solid #CCC;
+            text-align: center;
+            font-size: 10px;
+            display: none;
+            background-color: black;
+            opacity: 0.5;
+            overflow: auto;
+            _height: expression(this.scrollHeight > 456 ? "456px" : auto);
+        }
+
+    </style>
+</head>
+
+<body style="background-color: white">
+            <div>
+                <div>
+                    <div class="jumbotron">
+                        <h1>redis manage page</h1>
+                        <p>select the version of redis</p>
+                        <div style="float: left">
+                            <p><a href="javascript:clickSubmit('1')" target="_blank" class="btn btn-primary btn-lg" role="button">install redis</a>
+                            </p>
+                        </div>
+                        <div style="float: left">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </div>
+                        <div style="float: left">
+                            <p><a href="javascript:clickSubmit('2')" target="_blank" class="btn btn-primary btn-lg" role="button" style="color: #0d8ddb">add redis</a>
+                            </p>
+                        </div>
+                        <div style="float: left">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </div>
+                        <div style="float: left ;">
+                        <p><a href="javascript:clickSubmit('3')" target="_blank" class="btn btn-primary btn-lg" role="button" style="color: yellowgreen">add sentinel</a>
+                        </p></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ibox-title">
+                        <h5><small>Different versions of </small>redis</h5>
+                    </div>
+                    <div >
+                        <table class="table table-bordered white-bg">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">click</th>
+                                <th>redis</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="redis-list">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+                <div id="serverlist_detail" class="serverlist">
+                    <table class="table table-bordered white-bg">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center" id="selectCheck"><a href="javascript:selectAll()">全选</a></th>
+                                    <th>hostname</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="server-list">
+                            </tbody>
+                        </table>
+                        <div style="margin: 0px 25px 125px">
+                            <input type="button" value="提交" onclick="submitform()"/>
+                            <input type="button" value="关闭" onclick="closeDiv('serverlist_detail' , 'service_show_catalog_back')" />
+                        </div>
+                </div>
+
+                <div id="serverlist_detail_redis" class="serverlist_redis">
+                    <table class="table table-bordered white-bg">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center" id="selectCheck_redis"><a href="javascript:selectAll()">全选</a></th>
+                                    <th>hostname</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="server-list_redis">
+                                <tr>
+
+                                    <td width="20%" style="text-align: center">
+                                        <label>类型:</label>
+                                    </td>
+                                    <td width="80%" style="text-align: left">
+                                        <label><input name="radiotype" type="radio" value="master" />master</label>
+                                        <label><input name="radiotype" type="radio" value="slave" />slave</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="20%" style="text-align: center">
+                                        <label>Master ip:</label>
+                                    </td>
+                                    <td width="80%" style="text-align: left">
+                                        <input type="text" name="fname" id="fnameip" value="" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="20%" style="text-align: center">
+                                        <label>redis password:</label>
+                                    </td>
+                                    <td width="80%" style="text-align: left">
+                                        <input type="text" name="fname" id="fnamepd" value="" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="20%" style="text-align: center">
+                                        <label>redis listen port:</label>
+                                    </td>
+                                    <td width="80%" style="text-align: left">
+                                        <input type="text" name="fname" id="fnamept" value="" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="20%" style="text-align: center">
+                                        <label>redis maxclients:</label>
+                                    </td>
+                                    <td width="80%" style="text-align: left">
+                                        <input type="text" name="fname" id="fnamemc" value="" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="20%" style="text-align: center">
+                                        <label>redis maxmemory (GB):</label>
+                                    </td>
+                                    <td width="80%" style="text-align: left">
+                                        <input type="text" name="fname" id="fnamemm" value="" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="margin: 0px 25px 125px">
+                            <input type="button" value="提交" onclick="submitredis()"/>
+                            <input type="button" value="关闭" onclick="closeDiv1('serverlist_detail_redis' , 'service_show_catalog_back')" />
+                        </div>
+                </div>
+
+                <div id="service_show_catalog_back" class="div_catalog" style="width: 100% ; height: 100%;">
+                </div>
+            </div>
+
+
+
+    <!-- Mainly scripts -->
+    <script src="js/jquery-2.1.1.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <!-- Peity -->
+    <script src="js/plugins/peity/jquery.peity.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="js/inspinia.js"></script>
+    <script src="js/plugins/pace/pace.min.js"></script>
+
+    <!-- Peity demo data -->
+    <script src="js/demo/peity-demo.js"></script>
+    <script type="text/javascript">
+        var redistype = '';
+        var inputtype = '';
+        var checkvalue = '';
+
+         jQuery.ajax({
+                type : "get",
+                url  : "/redis/getfile",
+                dataType : 'html',
+                async: false,
+                error : function(event ,request , settings){
+                    alert("操作失败,请稍等片刻重新尝试......");
+                    return;
+                },
+                success : function(result){
+                    var obj = eval('(' + result + ')');
+                    var html = '';
+                    for(i in obj){
+                        html = html + '<tr><td width="20%" style="text-align: center"><label><input name="radio" type="radio" value="'+obj[i]+'" /></label> </td><td width="80%">'+obj[i].replace('.tar' , '').replace('.gz' , '')+'</td></tr>';
+                    }
+                    $("#redis-list").html(html);
+                }
+            });
+
+        function clickSubmit(type){
+            var x = document.getElementsByName('radio');
+            for(i in x){
+                if(x[i].checked){
+                    checkvalue = x[i].value;
+                    break;
+                }
+            }
+            if(checkvalue == ''){
+                alert('请选择redis安装版本或安装sentinel对应的redis版本');
+                return
+            }
+
+            if(type=='1'){
+                document.getElementById("serverlist_detail").style.display = "block";
+                document.getElementById("service_show_catalog_back").style.display = "block";
+                jQuery.ajax({
+                type : "get",
+                url  : "/redis/getserver",
+                dataType : 'html',
+                async: false,
+                error : function(event ,request , settings){
+                    alert("操作失败,请稍等片刻重新尝试......");
+                    return;
+                },
+                success : function(result){
+                    var obj = eval('(' + result + ')');
+                    var html = '';
+                    for(i in obj){
+                        html = html + '<tr><td width="20%" style="text-align: center"><label><input type="checkbox" value="'+obj[i]+' " name = "pome" /></label> </td><td width="80%" style="text-align: left">'+obj[i]+'</td></tr>';
+                    }
+                    $("#server-list").html(html);
+                }
+            });
+            }else if(type == '2'){
+                document.getElementById("serverlist_detail_redis").style.display = "block";
+                document.getElementById("service_show_catalog_back").style.display = "block";
+            }
+
+        redistype = type;
+        }
+
+        //切换主屏幕
+        function closeDiv(id , id2){
+            document.getElementById(id).style.display="none";
+            if(redistype == '1'){
+                document.getElementById(id2).style.display="none";
+            }
+        }
+
+        function closeDiv1(id , id2){
+            document.getElementById(id).style.display="none";
+            document.getElementById(id2).style.display="none";
+        }
+
+
+        function selectAll(){
+            var radio = document.getElementsByName("pome");
+            var val = "";
+            for(var i=0;i<radio.length;i++)
+            {
+                radio[i].checked=true;
+            }
+        $("#selectCheck").html("<a href='javascript:selectNone()'>反选</a>")
+       }
+
+       function selectNone(){
+           var radio = document.getElementsByName("pome");
+            var val = "";
+            for(var i=0;i<radio.length;i++)
+            {
+                radio[i].checked=false;
+            }
+        $("#selectCheck").html("<a href='javascript:selectAll()'>全选</a>")
+       }
+
+        function submitform(){
+            var id = document.getElementsByName("pome");
+            for(var i = 0; i < id.length; i++){
+                 if(id[i].checked)
+                 break;
+                 if(i == id.length-1){
+                   alert("请选择主机");
+                   return;
+                 }
+            }
+            var radio = document.getElementsByName("pome");
+            var val = "";
+            for(var i=0;i<radio.length;i++)
+            {
+                if(radio[i].checked){
+                    val = val + radio[i].value + ',';
+                }
+            }
+	    alert(checkvalue);
+            jQuery.ajax({
+                type : "get",
+                url  : "/redis/deal",
+                data : {'redis':checkvalue, 'type':redistype , 'server':val},
+                dataType : 'html',
+                async: false,
+                error : function(event ,request , settings){
+                    alert("操作失败,请稍等片刻重新尝试......");
+                    return;
+                },
+                success : function(result){
+                    alert('Installation Complete');
+                }
+            });
+        }
+
+
+        function submitredis(){
+            var x = document.getElementsByName('radiotype');
+            for(i in x){
+                if(x[i].checked){
+                    inputtype = x[i].value;
+                    break;
+                }
+            }
+
+            var input_type = inputtype;
+            var input_port = $("#fnamept").val();
+            var input_maxcli = $("#fnamemc").val();
+            var input_maxmem = $("#fnamemm").val();
+            var auth_passwd = $("#fnamepd").val();
+            var master_ip = $("#fnameip").val();
+
+            if(input_type == '' || input_port == '' ||input_maxcli == '' ||input_maxmem == '' ||auth_passwd == ''){
+                alert('请讲信息填写完整!');
+                return;
+            }
+            if(input_type == 'slave' && master_ip == ''){
+                alert('请填写master ip');
+                return;
+            }
+
+            alert(input_type + ' ' + input_port + ' ' + master_ip);
+
+            jQuery.ajax({
+            type : "get",
+            url  : "/redis/createconfig",
+            data : {'input_type':input_type, 'input_port':input_port , 'input_maxcli':input_maxcli, 'input_maxmem':input_maxmem, 'auth_passwd':auth_passwd, 'master_ip':master_ip},
+            dataType : 'html',
+            async: false,
+            error : function(event ,request , settings){
+                alert("操作失败,请稍等片刻重新尝试......");
+                return;
+            },
+            success : function(result){
+		alert(result);
+		checkvalue = result;
+                document.getElementById("serverlist_detail").style.display = "block";
+                document.getElementById("service_show_catalog_back").style.display = "block";
+                jQuery.ajax({
+                type : "get",
+                url  : "/redis/getserver",
+                dataType : 'html',
+                async: false,
+                error : function(event ,request , settings){
+                    alert("操作失败,请稍等片刻重新尝试......");
+                    return;
+                },
+                success : function(result){
+                    var obj = eval('(' + result + ')');
+                    var html = '';
+                    for(i in obj){
+                        html = html + '<tr><td width="20%" style="text-align: center"><label><input type="checkbox" value="'+obj[i]+' " name = "pome" /></label> </td><td width="80%" style="text-align: left">'+obj[i]+'</td></tr>';
+                    }
+                    $("#server-list").html(html);
+                }
+                });
+            }
+            });
+        }
+
+    </script>
+</body>
+
+</html>
